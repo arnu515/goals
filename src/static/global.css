@@ -1,0 +1,25 @@
+.goals-list, #add {
+    width: 60%;
+    margin: 0 auto;
+}
+
+.goals-list:not(:empty) {
+    border: 1px gray solid;
+}
+
+#add {
+    display: grid;
+    grid-template-columns: auto 5rem;
+    gap: 1rem;
+    margin: 1rem auto;
+}
+
+#add .w3-input {
+    display: inline;
+}
+
+@media (max-width: 800px) {
+    .goals-list, #add {
+        width: 95%;
+    }
+}

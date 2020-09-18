@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Goals</title>
+{% endblock head %}
+
+
+{% block body %}
+    <h1 class="w3-jumbo w3-center">Goals</h1>
+    <ul class="w3-ul goals-list">
+        {% for goal in goals %}
+        <li class="w3-bar" id="{{ goal['id'] }}">
+            <span class="w3-bar-item">{{ goal.name }}</span>
+            <button onclick="done('{{ goal['id']}}')" class="w3-button w3-right w3-bar-item w3-green w3-hover-light-green" style="padding: 0.25rem 0.7rem"><span class="w3-large">&check;</span></button>
+        </li>
+        {% endfor %}
+    </ul>
+    <form method="post" action="/new" id="add">
+        <input type="text" autofocus autocomplete="off" placeholder="Add item" id="item-name" class="w3-input w3-border">
+        <button class="w3-button w3-blue w3-hover-aqua">Add</button>
+    </form>
+
+    <script>
+        document.getElementById("add").addEventListener("submit", function (e) {
+            e.preventDefault();
+            var name = document.getElementById("item-name").value;
+            if (!name) return;
+            var id = Date.now();
+            fetch("/new", {"method": "POST", "headers": {"Content-Type": "application/json"}, "body": JSON.stringify({name, id})})
+            var toAdd = `
+            <span class="w3-bar-item">${name}</span>
+            <button onclick="done('${id}')" class="w3-button w3-right w3-bar-item w3-green w3-hover-light-green" style="padding: 0.25rem 0.7rem"><span class="w3-large">&check;</span></button>`;
+            var li = document.createElement("li");
+            li.className = "w3-bar";
+            li.id = id;
+            li.innerHTML = toAdd;
+            document.querySelector(".goals-list").appendChild(li);
+            document.getElementById("item-name").value = "";
+        });
+
+        function done(id) {
+            var goalsList = document.querySelector(".goals-list");
+            fetch("/done", {"method": "POST", "headers": {"Content-Type": "application/json"}, "body": JSON.stringify({id})})
+            var goals = []
+            var oldGoals = goalsList.children
+            for (var i = 0; i < oldGoals.length; i++) {
+                if (oldGoals[i].id != id) goals.push(oldGoals[i]);
+            }
+            goalsList.innerHTML = '';
+            for (var goal of goals) {
+                goalsList.appendChild(goal);
+            }
+        }
+    </script>
+{% endblock body %}
